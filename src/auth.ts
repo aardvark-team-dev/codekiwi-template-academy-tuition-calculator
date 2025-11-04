@@ -66,6 +66,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         sameSite: "none",
         path: "/",
         secure: true,
+        partitioned: true,  // CHIPS 지원 (Chrome/Edge) - CSRF 토큰도 파티션 필요
       },
     },
   },
