@@ -43,7 +43,7 @@ export default function ClassDetailPage() {
   }
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto px-8 py-4">
       <h1 className="text-2xl font-bold mb-4">{classDetail.name}</h1>
       <Card className="mb-4">
         <CardHeader>
@@ -51,14 +51,6 @@ export default function ClassDetailPage() {
         </CardHeader>
         <CardContent>
           <MonthlyInfoManagement classId={id} />
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader>
-          <CardTitle>소속 학생</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {/* TODO: 학생 관리 UI 구현 */}
         </CardContent>
       </Card>
     </div>

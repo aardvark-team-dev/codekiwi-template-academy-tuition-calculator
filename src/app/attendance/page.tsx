@@ -180,6 +180,15 @@ export default function AttendancePage() {
     }
   }
 
+  const handleDeductionChange = (studentId: string, amount: number) => {
+    setAttendanceMap(prev => {
+      const newMap = new Map(prev)
+      const current = newMap.get(studentId) || { status: 'present' as const }
+      newMap.set(studentId, { ...current, deductionAmount: amount })
+      return newMap
+    })
+  }
+
   const handleBulkSave = async () => {
     const dateStr = format(selectedDate, 'yyyy-MM-dd')
     const records: any[] = []
@@ -327,10 +336,10 @@ export default function AttendancePage() {
                               return (
                                 <div 
                                   key={student.id}
-                                  className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border"
+                                  className="p-4 bg-gray-50 rounded-lg border space-y-3"
                                 >
-                                  <div className="font-medium text-gray-900">{student.name}</div>
-                                  <div className="flex items-center gap-4">
+                                  <div className="flex items-center justify-between">
+                                    <div className="font-medium text-gray-900">{student.name}</div>
                                     <RadioGroup
                                       value={status}
                                       onValueChange={(value) => 
@@ -376,13 +385,24 @@ export default function AttendancePage() {
                                         </TooltipProvider>
                                       </div>
                                     </RadioGroup>
-
-                                    {status === 'excused' && record?.deductionAmount && (
-                                      <div className="ml-4 px-3 py-1 bg-orange-100 text-orange-700 rounded-md text-sm font-medium">
-                                        -{record.deductionAmount.toLocaleString()}원
-                                      </div>
-                                    )}
                                   </div>
+
+                                  {status === 'excused' && (
+                                    <div className="flex items-center justify-end gap-2 pt-2 border-t">
+                                      <Label htmlFor={`${student.id}-deduction`} className="text-sm text-gray-600 whitespace-nowrap">
+                                        차감액
+                                      </Label>
+                                      <Input
+                                        id={`${student.id}-deduction`}
+                                        type="number"
+                                        value={record?.deductionAmount || 0}
+                                        onChange={(e) => handleDeductionChange(student.id, Number(e.target.value))}
+                                        className="w-32 text-right"
+                                        placeholder="0"
+                                      />
+                                      <span className="text-sm text-gray-600">원</span>
+                                    </div>
+                                  )}
                                 </div>
                               )
                             })}
