@@ -1,0 +1,143 @@
+- title: 관리자 회원가입
+  userStoryId: US-001
+  userStory: 학원 관리자는 출결 관리 시스템을 사용하기 위해 이메일, 비밀번호로 가입할 수 있다.
+  acceptanceCriteria:
+    - description: 이메일, 비밀번호 입력 필드가 제공된다
+      acRisk: 0
+    - description: 이메일 형식 검증이 수행된다
+      acRisk: 0
+    - description: 비밀번호는 8자 이상이어야 한다
+      acRisk: 0
+    - description: 가입 완료 시 로그인 페이지로 이동한다
+      acRisk: 0
+  priority: P0
+  dependencies: []
+  status: 개발 완료
+  risk: 0
+- title: 학생 등록
+  userStoryId: US-002
+  userStory: 학원 관리자는 출결 관리 및 수강료 계산의 기준을 마련하기 위해 학생 정보를 등록할 수 있다.
+  acceptanceCriteria:
+    - description: 학생 이름, 연락처를 입력할 수 있다
+      acRisk: 0
+    - description: 휴대폰 번호 형식(`010-XXXX-XXXX`)만 허용하고, 중복 등록은 불가능
+      acRisk: 0
+    - description: 등록된 학생 목록을 확인할 수 있다
+      acRisk: 0
+    - description: 학생 정보를 수정할 수 있다
+      acRisk: 0
+    - description: 학생 등록 후, 별도 화면에서 여러 반에 배정 가능 (N:M 관계)
+      acRisk: 0
+  priority: P0
+  dependencies:
+    - US-007
+  status: 개발 완료
+  risk: 0
+- title: 출결 상태 입력
+  userStoryId: US-003
+  userStory: 학원 관리자는 유계결석을 포함한 정확한 출석 기록을 남기기 위해 날짜별로 학생의 출석/결석/유계결석을 선택하여 기록할 수 있다.
+  acceptanceCriteria:
+    - description: 날짜를 선택하면, 해당 날짜에 수업이 있는 반들이 아코디언 목록으로 표시된다
+      acRisk: 0
+    - description: 각 반을 펼치면 해당 반에 속한 학생들의 출결 입력 UI가 표시된다
+      acRisk: 0
+    - description: 각 학생별로 출석, 결석, 유계결석 중 하나를 선택할 수 있다
+      acRisk: 0
+    - description: 유계결석 선택 시, 시스템이 '(해당 반의 수강료 / 해당 반의 총 수업일수)'로 계산한 차감액이 반 안의 학생의 입력
+        필드에 자동으로 채워진다
+      acRisk: 0
+    - description: 관리자는 시스템이 계산한 유계결석 차감액을 직접 수정할 수 있다
+      acRisk: 0
+    - description: 기존 출결 기록을 수정할 수 있다
+      acRisk: 0
+  priority: P0
+  dependencies:
+    - US-002
+    - US-007
+  status: 개발 완료
+  risk: 0
+- title: 월별 수강료 자동 계산
+  userStoryId: US-004
+  userStory: 학원 관리자는 유계결석을 반영한 정확한 청구 금액을 확인하기 위해 월말에 학생별 최종 청구 금액을 자동으로 계산하여 조회할 수 있다.
+  acceptanceCriteria:
+    - description: 학생의 정액 수강료는 소속된 모든 반의 월 수강료를 합산 - 유계결석 차감액으로 자동으로 계산된다
+      acRisk: 0
+    - description: 정액 수강료에서 유계결석 차감액의 총합이 자동으로 계산된다
+      acRisk: 0
+    - description: 학생별 출석/결석/유계결석 횟수가 표시된다
+      acRisk: 0
+    - description: 유계결석 차감 금액과 최종 청구액이 명확히 구분되어 표시된다
+      acRisk: 0
+    - description: 전체 학생의 월별 청구 내역을 한 화면에서 확인할 수 있다
+      acRisk: 0
+    - description: 청구 내역 조회 시점에 항상 최신 출결 데이터를 기반으로 실시간 계산한다 (별도 저장 없음)
+      acRisk: 0
+    - description: 학생 개인에게 적용되는 별도의 할인 기능은 제공하지 않는다
+      acRisk: 0
+  priority: P0
+  dependencies:
+    - US-003
+    - US-007
+  status: 개발 완료
+  risk: 0
+- title: 청구서 발행 전 확인
+  userStoryId: US-005
+  userStory: 학원 관리자는 잘못된 납부 알림 발송을 방지하기 위해 청구서 발행 전 유계결석 내역과 차감 금액을 최종 확인할 수 있다.
+  acceptanceCriteria:
+    - description: 학생별 유계결석 날짜와 차감액이 목록으로 표시된다
+      acRisk: 0
+    - description: 차감 전 정액 수강료와 차감 후 최종 청구액이 비교되어 표시된다
+      acRisk: 0
+    - description: 확인 후 청구서 발행 버튼을 클릭하여 최종 승인할 수 있다
+      acRisk: 0
+    - description: 수정이 필요한 경우 출결 입력 화면으로 돌아갈 수 있다
+      acRisk: 0
+  priority: P0
+  dependencies:
+    - US-004
+  status: 개발 완료
+  risk: 0
+- title: 월별 청구서 발행
+  userStoryId: US-006
+  userStory: 학원 관리자는 정확한 수강료 청구 내역을 학부모에게 전달하기 위해, 최종 확인된 청구 금액으로 청구서를 발행할 수 있다.
+  acceptanceCriteria:
+    - description: 학생별 청구서가 텍스트(SMS, 카카오톡 등) 형태로 생성된다
+      acRisk: 0
+    - description: 청구서에는 학생 이름, 해당 월, 소속 반 목록, 정액 수강료(반별 합계), 총 출석/결석/유계결석 일수, 총 차감액,
+        최종 청구액이 포함된다
+      acRisk: 0
+    - description: 생성된 청구서 텍스트를 복사할 수 있는 버튼을 제공한다
+      acRisk: 0
+    - description: 청구서 발행 이력이 월별로 기록되어 조회 가능하다
+      acRisk: 0
+  priority: P2
+  dependencies:
+    - US-005
+  status: 개발 완료
+  risk: 0
+- title: 반 관리 및 수업일수 설정
+  userStoryId: US-007
+  userStory: 학원 관리자는 정확한 수강료 계산을 위해 반(Class)을 생성하고, 월 수강료 및 월별 총 수업일수를 설정 및 수정할 수 있다.
+  acceptanceCriteria:
+    - description: 반을 생성하고 이름을 지정할 수 있다
+      acRisk: 0
+    - description: 반 생성 시 월 수강료를 설정할 수 있다
+      acRisk: 0
+    - description: 기존 반의 월 수강료를 수정할 수 없다
+      acRisk: 0
+    - description: 월별로 각 반의 총 수업일수를 입력할 수 있다
+      acRisk: 0
+    - description: 입력된 월별 총 수업일수를 나중에 수정할 수 있다
+      acRisk: 0
+    - description: 총 수업일수를 수정하더라도 이미 확정(청구서 발행)된 과거 수강료는 변경하지 않는다
+      acRisk: 0
+    - description: 학생을 여러 반에 배정할 수 있다 (N:M 관계)
+      acRisk: 0
+    - description: 한 학생이 같은 반에 중복으로 배정될 수 없다
+      acRisk: 0
+    - description: 반 상세 화면에서 학생을 추가/제거할 수 있다
+      acRisk: 0
+  priority: P0
+  dependencies: []
+  status: 개발 완료
+  risk: 0

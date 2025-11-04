@@ -79,9 +79,94 @@ function initializeTables(database: Database.Database) {
     'CREATE INDEX IF NOT EXISTS idx_users_created_at ON users(created_at)'
   ]
 
+  // Classes 테이블 - 반 정보
+  const createClassesTable = `
+    CREATE TABLE IF NOT EXISTS classes (
+      id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
+      name TEXT NOT NULL,
+      monthly_tuition INTEGER NOT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+  `
+
+  // Students 테이블 - 학생 정보
+  const createStudentsTable = `
+    CREATE TABLE IF NOT EXISTS students (
+      id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
+      name TEXT NOT NULL,
+      phone_number TEXT UNIQUE NOT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+  `
+
+  // Class_Students 테이블 - 학생-반 N:M 관계
+  const createClassStudentsTable = `
+    CREATE TABLE IF NOT EXISTS class_students (
+      class_id TEXT NOT NULL,
+      student_id TEXT NOT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      PRIMARY KEY (class_id, student_id),
+      FOREIGN KEY (class_id) REFERENCES classes(id) ON DELETE CASCADE,
+      FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE
+    )
+  `
+
+  // Monthly_Class_Info 테이블 - 월별 수업 정보
+  const createMonthlyClassInfoTable = `
+    CREATE TABLE IF NOT EXISTS monthly_class_info (
+      id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
+      class_id TEXT NOT NULL,
+      year INTEGER NOT NULL,
+      month INTEGER NOT NULL,
+      total_lessons INTEGER NOT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      UNIQUE (class_id, year, month),
+      FOREIGN KEY (class_id) REFERENCES classes(id) ON DELETE CASCADE
+    )
+  `
+
+  // Attendances 테이블 - 출결 정보
+  const createAttendancesTable = `
+    CREATE TABLE IF NOT EXISTS attendances (
+      id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
+      student_id TEXT NOT NULL,
+      class_id TEXT NOT NULL,
+      date TEXT NOT NULL,
+      status TEXT NOT NULL CHECK(status IN ('PRESENT', 'ABSENT', 'EXCUSED_ABSENT')),
+      deduction_amount INTEGER DEFAULT 0,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      UNIQUE (student_id, class_id, date),
+      FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE,
+      FOREIGN KEY (class_id) REFERENCES classes(id) ON DELETE CASCADE
+    )
+  `
+
+  // Invoices 테이블 - 청구서 발행 이력
+  const createInvoicesTable = `
+    CREATE TABLE IF NOT EXISTS invoices (
+      id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
+      student_id TEXT NOT NULL,
+      student_name TEXT NOT NULL,
+      month TEXT NOT NULL,
+      base_amount INTEGER NOT NULL,
+      total_deduction INTEGER NOT NULL,
+      final_amount INTEGER NOT NULL,
+      invoice_text TEXT NOT NULL,
+      issued_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      UNIQUE (student_id, month),
+      FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE
+    )
+  `
+
   try {
     database.exec(createUsersTable)
     database.exec(createAdminsTable)
+    database.exec(createStudentsTable)
+    database.exec(createClassesTable)
+    database.exec(createClassStudentsTable)
+    database.exec(createMonthlyClassInfoTable)
+    database.exec(createAttendancesTable)
+    database.exec(createInvoicesTable)
     
     createUsersIndexes.forEach(sql => database.exec(sql))
 

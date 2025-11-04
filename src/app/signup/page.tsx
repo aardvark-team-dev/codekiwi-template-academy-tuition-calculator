@@ -4,10 +4,11 @@ import { useState, useEffect, Suspense } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { requestStorageAccessIfNeeded, getStorageAccessStatus } from '@/lib/storage-access'
+import { AnimatedBackground } from '@/components/ui/animated-background'
+import { GlassCard, GlassCardHeader, GlassCardTitle, GlassCardDescription, GlassCardContent, GlassCardFooter } from '@/components/ui/glass-card'
 
 function SignUpForm() {
   const router = useRouter()
@@ -18,7 +19,6 @@ function SignUpForm() {
   const [isLoading, setIsLoading] = useState(false)
   const [showIframeNotice, setShowIframeNotice] = useState(false)
 
-  // iframe 환경 확인
   useEffect(() => {
     getStorageAccessStatus().then((status) => {
       if (status.isInIframe && !status.hasAccess) {
@@ -33,7 +33,6 @@ function SignUpForm() {
     setError(null)
 
     try {
-      // 🔥 Storage Access API 권한 요청 (iframe 환경에서만)
       const hasAccess = await requestStorageAccessIfNeeded()
       
       if (!hasAccess) {
@@ -65,95 +64,103 @@ function SignUpForm() {
   }
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center bg-neutral-950 text-white overflow-hidden">
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute -top-24 -left-24 h-72 w-72 rounded-full bg-white/10 blur-3xl"></div>
-        <div className="absolute -bottom-24 -right-24 h-72 w-72 rounded-full bg-white/5 blur-3xl"></div>
+    <AnimatedBackground
+      imageUrl="https://images.pexels.com/photos/3184418/pexels-photo-3184418.jpeg?auto=compress&cs=tinysrgb&w=1920"
+      overlay
+      gradient
+    >
+      <div className="min-h-screen flex items-center justify-center px-4">
+        <GlassCard className="w-full max-w-md">
+          <GlassCardHeader className="text-center">
+            <GlassCardTitle className="text-3xl">계정 생성</GlassCardTitle>
+            <GlassCardDescription className="text-lg mt-2">
+              시작하기 위해 아래 정보를 입력해주세요.
+            </GlassCardDescription>
+          </GlassCardHeader>
+          <GlassCardContent>
+            {showIframeNotice && (
+              <div className="mb-4 rounded-md border border-blue-500/20 bg-blue-500/10 px-3 py-2 text-sm text-blue-600">
+                ℹ️ 처음 가입 시 브라우저가 쿠키 사용 권한을 요청할 수 있습니다.
+              </div>
+            )}
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">이름</Label>
+                <Input
+                  id="name"
+                  type="text"
+                  placeholder="홍길동"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                  disabled={isLoading}
+                  className="bg-white/50 backdrop-blur-sm"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="email">이메일 주소</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="email@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  disabled={isLoading}
+                  className="bg-white/50 backdrop-blur-sm"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="password">비밀번호</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  disabled={isLoading}
+                  className="bg-white/50 backdrop-blur-sm"
+                />
+                <p className="text-xs text-gray-600">최소 8자 이상</p>
+              </div>
+              {error && <p className="text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg">{error}</p>}
+              <Button
+                type="submit"
+                className="w-full bg-gradient-to-r from-emerald-500 to-blue-500 hover:from-emerald-600 hover:to-blue-600 text-white shadow-lg"
+                disabled={isLoading}
+              >
+                {isLoading ? '생성 중...' : '계정 생성'}
+              </Button>
+            </form>
+          </GlassCardContent>
+          <GlassCardFooter className="flex justify-center text-sm">
+            <p className="text-gray-600">이미 계정이 있으신가요?&nbsp;</p>
+            <Link href="/login" className="font-semibold text-emerald-600 hover:text-emerald-700">
+              로그인
+            </Link>
+          </GlassCardFooter>
+        </GlassCard>
       </div>
-      <Card className="w-full max-w-md border border-white/10 bg-white/5 backdrop-blur-xl shadow-2xl">
-        <CardHeader className="text-center space-y-2">
-          <CardTitle className="text-3xl font-bold tracking-tight bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent">계정 생성</CardTitle>
-          <CardDescription className="text-white/60">시작하기 위해 아래 정보를 입력해주세요.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {showIframeNotice && (
-            <div className="mb-4 rounded-md border border-blue-500/20 bg-blue-500/10 px-3 py-2 text-sm text-blue-300">
-              ℹ️ 처음 가입 시 브라우저가 쿠키 사용 권한을 요청할 수 있습니다.
-            </div>
-          )}
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="name" className="text-white/80">이름 (선택)</Label>
-              <Input
-                id="name"
-                type="text"
-                placeholder="홍길동"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                disabled={isLoading}
-                className="bg-transparent border-white/10 text-white placeholder:text-white/40 focus-visible:ring-white/20"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-white/80">이메일 주소</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="email@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                disabled={isLoading}
-                className="bg-transparent border-white/10 text-white placeholder:text-white/40 focus-visible:ring-white/20"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password" className="text-white/80">비밀번호</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="8자 이상 입력"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                disabled={isLoading}
-                className="bg-transparent border-white/10 text-white placeholder:text-white/40 focus-visible:ring-white/20"
-              />
-            </div>
-            {error && <p className="text-sm text-red-400">{error}</p>}
-            <Button
-              type="submit"
-              className="w-full !bg-transparent bg-gradient-to-b from-white via-neutral-200 to-neutral-300 text-neutral-900 ring-1 ring-white/20 hover:bg-gradient-to-b hover:from-neutral-50 hover:via-neutral-200 hover:to-neutral-300"
-              disabled={isLoading}
-            >
-              {isLoading ? '가입하는 중...' : '계속'}
-            </Button>
-          </form>
-        </CardContent>
-        <CardFooter className="flex justify-center text-sm text-white/70">
-          <p>이미 계정이 있으신가요?&nbsp;</p>
-          <Link href="/login" className="font-semibold text-white hover:text-white/80">
-            로그인하기
-          </Link>
-        </CardFooter>
-      </Card>
-    </div>
+    </AnimatedBackground>
   )
 }
 
 export default function SignUpPage() {
   return (
     <Suspense fallback={
-      <div className="relative min-h-screen flex items-center justify-center bg-neutral-950 text-white overflow-hidden">
-        <div className="pointer-events-none absolute inset-0">
-          <div className="absolute -top-24 -left-24 h-72 w-72 rounded-full bg-white/10 blur-3xl"></div>
-          <div className="absolute -bottom-24 -right-24 h-72 w-72 rounded-full bg-white/5 blur-3xl"></div>
+      <AnimatedBackground
+        imageUrl="https://images.pexels.com/photos/3184418/pexels-photo-3184418.jpeg?auto=compress&cs=tinysrgb&w=1920"
+        overlay
+        gradient
+      >
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+            <p className="text-white text-lg">로딩 중...</p>
+          </div>
         </div>
-        <div className="text-center relative z-10">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white/40 mx-auto mb-4"></div>
-          <p className="text-white/80">로딩 중...</p>
-        </div>
-      </div>
+      </AnimatedBackground>
     }>
       <SignUpForm />
     </Suspense>

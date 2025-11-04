@@ -25,11 +25,17 @@ export async function POST(req: NextRequest) {
     const userService = new UserService(new SqliteUserRepo())
 
     // 사용자 등록
-    await userService.registerUser({
+    const newUser = await userService.registerUser({
       email,
       password,
       name: name ?? null,
-    })
+    });
+
+    // 첫 가입자를 관리자로 지정
+    const admins = userService.getAdminUsers();
+    if (admins.length === 0) {
+      userService.grantAdminRole(newUser.id);
+    }
 
     return NextResponse.json({ message: '회원가입이 완료되었습니다.' }, { status: 201 })
 

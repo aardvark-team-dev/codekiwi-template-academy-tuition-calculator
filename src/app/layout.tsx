@@ -4,6 +4,7 @@ import "./globals.css";
 import AuthSessionProvider from "@/components/AuthSessionProvider";
 import DashboardFloatingButton from "@/components/DashboardFloatingButton";
 import { TutorialMission } from "@/components/TutorialMission";
+import { GlassNavbar } from "@/components/navbar/GlassNavbar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -44,6 +45,7 @@ export default function RootLayout({
         style={{ fontFamily: 'var(--font-noto-sans-kr), system-ui, sans-serif' }}
       >
         <AuthSessionProvider>
+          <GlassNavbar />
           {children}
         </AuthSessionProvider>
         <DashboardFloatingButton />
